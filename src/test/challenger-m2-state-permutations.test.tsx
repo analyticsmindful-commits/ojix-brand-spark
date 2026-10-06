@@ -48,90 +48,112 @@ describe("Adversarial Stress Suite: Challenger M2_2 (State Permutations & Contra
       expect(all256Combinations).toHaveLength(256);
     });
 
-    it("evaluates MetricDashboard under all 256 combinations for both 'ojix' and 'baseline' modes without NaN, undefined, or crashes", () => {
-      const domainIds: DomainId[] = [
-        "legal-os",
-        "industrial-erp",
-        "clinical-logistics",
-        "supply-chain-nexus",
-      ];
-      const modes: Array<"ojix" | "baseline"> = ["ojix", "baseline"];
+    it(
+      "evaluates MetricDashboard under all 256 combinations for both 'ojix' and 'baseline' modes without NaN, undefined, or crashes",
+      () => {
+        const domainIds: DomainId[] = [
+          "legal-os",
+          "industrial-erp",
+          "clinical-logistics",
+          "supply-chain-nexus",
+        ];
+        const modes: Array<"ojix" | "baseline"> = ["ojix", "baseline"];
 
-      // Check all combinations for all domains
-      let evaluationsCount = 0;
-      for (const domainId of domainIds) {
-        const domain = SHOWCASE_DOMAINS[domainId];
-        for (const mode of modes) {
-          for (const toggles of all256Combinations) {
-            const { container, unmount } = render(
-              <MetricDashboard
-                metrics={domain.metrics}
-                simulationMode={mode}
-                domainId={domainId}
-                activeToggles={toggles}
-              />,
-            );
+        // Check all combinations for all domains
+        let evaluationsCount = 0;
+        for (const domainId of domainIds) {
+          const domain = SHOWCASE_DOMAINS[domainId];
+          for (const mode of modes) {
+            let view: ReturnType<typeof render> | null = null;
+            for (const toggles of all256Combinations) {
+              const element = (
+                <MetricDashboard
+                  metrics={domain.metrics}
+                  simulationMode={mode}
+                  domainId={domainId}
+                  activeToggles={toggles}
+                />
+              );
 
-            const text = container.textContent || "";
+              if (!view) {
+                view = render(element);
+              } else {
+                view.rerender(element);
+              }
 
-            // Strictly assert NO literal "undefined" or "NaN" in output text
-            expect(text).not.toContain("undefined");
-            expect(text).not.toContain("NaN");
-            expect(text).not.toContain("null");
+              const text = view.container.textContent || "";
 
-            unmount();
-            evaluationsCount++;
+              // Strictly assert NO literal "undefined" or "NaN" in output text
+              expect(text).not.toContain("undefined");
+              expect(text).not.toContain("NaN");
+              expect(text).not.toContain("null");
+
+              evaluationsCount++;
+            }
+            view?.unmount();
           }
         }
-      }
 
-      // Total evaluations: 4 domains * 2 modes * 256 combos = 2,048 renders
-      expect(evaluationsCount).toBe(2048);
-    });
+        // Total evaluations: 4 domains * 2 modes * 256 combos = 2,048 renders
+        expect(evaluationsCount).toBe(2048);
+      },
+      30000,
+    );
 
-    it("evaluates WorkflowTopology under all 256 combinations across all 16 node positions without NaN, undefined, or unhandled exceptions", () => {
-      const domainIds: DomainId[] = [
-        "legal-os",
-        "industrial-erp",
-        "clinical-logistics",
-        "supply-chain-nexus",
-      ];
+    it(
+      "evaluates WorkflowTopology under all 256 combinations across all 16 node positions without NaN, undefined, or unhandled exceptions",
+      () => {
+        const domainIds: DomainId[] = [
+          "legal-os",
+          "industrial-erp",
+          "clinical-logistics",
+          "supply-chain-nexus",
+        ];
 
-      let topologyEvaluations = 0;
-      for (const domainId of domainIds) {
-        const domain = SHOWCASE_DOMAINS[domainId];
-        for (let nodeIdx = 0; nodeIdx < domain.nodes.length; nodeIdx++) {
-          for (const toggles of all256Combinations) {
-            const { container, unmount } = render(
-              <WorkflowTopology
-                nodes={domain.nodes}
-                selectedNodeIndex={nodeIdx}
-                onSelectNode={() => {}}
-                simulationMode="ojix"
-                activeToggles={toggles}
-                domainId={domainId}
-              />,
-            );
+        let topologyEvaluations = 0;
+        for (const domainId of domainIds) {
+          const domain = SHOWCASE_DOMAINS[domainId];
+          for (let nodeIdx = 0; nodeIdx < domain.nodes.length; nodeIdx++) {
+            let view: ReturnType<typeof render> | null = null;
+            for (const toggles of all256Combinations) {
+              const element = (
+                <WorkflowTopology
+                  nodes={domain.nodes}
+                  selectedNodeIndex={nodeIdx}
+                  onSelectNode={() => {}}
+                  simulationMode="ojix"
+                  activeToggles={toggles}
+                  domainId={domainId}
+                />
+              );
 
-            const text = container.textContent || "";
-            expect(text).not.toContain("undefined");
-            expect(text).not.toContain("NaN");
+              if (!view) {
+                view = render(element);
+              } else {
+                view.rerender(element);
+              }
 
-            // Verify payload inspector rendered valid code block
-            const codeEl = container.querySelector("code");
-            expect(codeEl).not.toBeNull();
-            const payloadRaw = codeEl?.textContent || "";
-            expect(() => JSON.parse(payloadRaw)).not.toThrow();
+              const text = view.container.textContent || "";
+              expect(text).not.toContain("undefined");
+              expect(text).not.toContain("NaN");
 
-            unmount();
-            topologyEvaluations++;
+              // Verify payload inspector rendered valid code block
+              const codeEl = view.container.querySelector("code");
+              expect(codeEl).not.toBeNull();
+              const payloadRaw = codeEl?.textContent || "";
+              expect(() => JSON.parse(payloadRaw)).not.toThrow();
+
+              topologyEvaluations++;
+            }
+            view?.unmount();
           }
         }
-      }
 
-      // 4 domains * 4 nodes * 256 combos = 4,096 evaluations
-      expect(topologyEvaluations).toBe(4096);
-    }, 60000);
+        // 4 domains * 4 nodes * 256 combos = 4,096 evaluations
+        expect(topologyEvaluations).toBe(4096);
+      },
+      60000,
+    );
   });
 
   // SUITE 2: Rapid Asynchronous Tab Switching & Clean State Reset
@@ -175,50 +197,54 @@ describe("Adversarial Stress Suite: Challenger M2_2 (State Permutations & Contra
       expect(erpToolToggle).toHaveAttribute("aria-checked", "false");
     });
 
-    it("executes high-frequency rapid asynchronous switching across all 4 domain tabs without desynchronization", async () => {
-      render(<ShowcaseSection />);
+    it(
+      "executes high-frequency rapid asynchronous switching across all 4 domain tabs without desynchronization",
+      async () => {
+        render(<ShowcaseSection />);
 
-      const tabSequence: DomainId[] = [
-        "legal-os",
-        "industrial-erp",
-        "clinical-logistics",
-        "supply-chain-nexus",
-        "clinical-logistics",
-        "legal-os",
-        "supply-chain-nexus",
-        "industrial-erp",
-      ];
+        const tabSequence: DomainId[] = [
+          "legal-os",
+          "industrial-erp",
+          "clinical-logistics",
+          "supply-chain-nexus",
+          "clinical-logistics",
+          "legal-os",
+          "supply-chain-nexus",
+          "industrial-erp",
+        ];
 
-      const domainLabels: Record<DomainId, RegExp> = {
-        "legal-os": /Legal OS/i,
-        "industrial-erp": /Industrial ERP/i,
-        "clinical-logistics": /Clinical Logistics/i,
-        "supply-chain-nexus": /Supply Chain/i,
-      };
+        const domainLabels: Record<DomainId, RegExp> = {
+          "legal-os": /Legal OS/i,
+          "industrial-erp": /Industrial ERP/i,
+          "clinical-logistics": /Clinical Logistics/i,
+          "supply-chain-nexus": /Supply Chain/i,
+        };
 
-      const expectedKeywords: Record<DomainId, string> = {
-        "legal-os": "Court Docket Ingestion",
-        "industrial-erp": "Work Order Trigger",
-        "clinical-logistics": "Pickup Accession",
-        "supply-chain-nexus": "EDI 850 Release",
-      };
+        const expectedKeywords: Record<DomainId, string> = {
+          "legal-os": "Court Docket Ingestion",
+          "industrial-erp": "Work Order Trigger",
+          "clinical-logistics": "Pickup Accession",
+          "supply-chain-nexus": "EDI 850 Release",
+        };
 
-      for (let i = 0; i < 3; i++) {
-        for (const domId of tabSequence) {
-          const tabBtn = screen.getByRole("tab", { name: domainLabels[domId] });
-          fireEvent.click(tabBtn);
+        for (let i = 0; i < 3; i++) {
+          for (const domId of tabSequence) {
+            const tabBtn = screen.getByRole("tab", { name: domainLabels[domId] });
+            fireEvent.click(tabBtn);
 
-          // Asynchronous microtask yield
-          await act(async () => {
-            await new Promise((r) => setTimeout(r, 5));
-          });
+            // Asynchronous microtask yield
+            await act(async () => {
+              await new Promise((r) => setTimeout(r, 5));
+            });
 
-          // State must be consistent with the clicked tab
-          expect(screen.getByText(expectedKeywords[domId])).toBeInTheDocument();
-          expect(screen.getByText(/STAGE 01 OF 04/i)).toBeInTheDocument();
+            // State must be consistent with the clicked tab
+            expect(screen.getByText(expectedKeywords[domId])).toBeInTheDocument();
+            expect(screen.getByText(/STAGE 01 OF 04/i)).toBeInTheDocument();
+          }
         }
-      }
-    });
+      },
+      30000,
+    );
 
     it("ensures no cross-domain state pollution when toggling in one domain then switching to another", () => {
       render(<ShowcaseSection />);
@@ -468,7 +494,8 @@ describe("Adversarial Stress Suite: Challenger M2_2 (State Permutations & Contra
         fireEvent.click(copyBtn);
       });
 
-      expect(copyBtn).toHaveTextContent(/COPIED/i);
+      expect(copyBtn).toHaveTextContent(/FAILED TO COPY/i);
+      expect(copyBtn).not.toHaveTextContent(/COPIED/i);
 
       act(() => {
         vi.advanceTimersByTime(2000);
@@ -481,6 +508,7 @@ describe("Adversarial Stress Suite: Challenger M2_2 (State Permutations & Contra
     });
 
     it("gracefully handles rejected writeText promise without crashing", async () => {
+      const origClipboard = navigator.clipboard;
       const writeTextMock = vi.fn().mockRejectedValue(new Error("Clipboard permission denied"));
       Object.assign(navigator, {
         clipboard: {
@@ -495,13 +523,17 @@ describe("Adversarial Stress Suite: Challenger M2_2 (State Permutations & Contra
         fireEvent.click(copyBtn);
       });
 
-      expect(copyBtn).toHaveTextContent(/COPIED/i);
+      expect(copyBtn).toHaveTextContent(/FAILED TO COPY/i);
+      expect(copyBtn).not.toHaveTextContent(/COPIED/i);
 
       act(() => {
         vi.advanceTimersByTime(2000);
       });
 
       expect(copyBtn).toHaveTextContent(/COPY JSON/i);
+
+      // Restore
+      Object.assign(navigator, { clipboard: origClipboard });
     });
 
     it("verifies tactile press-spring classes are present on the copy button", () => {

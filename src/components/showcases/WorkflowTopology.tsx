@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { CheckCircle2, AlertTriangle, Activity, Lock, Copy, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type {
@@ -36,9 +36,20 @@ export function WorkflowTopology({
   domainId,
   className,
 }: WorkflowTopologyProps) {
-  const [copied, setCopied] = useState(false);
+  type CopyStatus = "idle" | "copied" | "error";
+  const [copyStatus, setCopyStatus] = useState<CopyStatus>("idle");
+  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [reducedMotion, setReducedMotion] = useState(false);
   const isBaseline = simulationMode === "baseline";
+
+  // Cleanup copy feedback timer on unmount
+  useEffect(() => {
+    return () => {
+      if (copyTimeoutRef.current) {
+        clearTimeout(copyTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // Check prefers-reduced-motion client-side safely without SSR hydration mismatch
   useEffect(() => {
@@ -200,15 +211,21 @@ export function WorkflowTopology({
   const displayPayload = activeNodeState?.payload || "{}";
 
   const handleCopy = async () => {
+    if (copyTimeoutRef.current) {
+      clearTimeout(copyTimeoutRef.current);
+    }
+
     try {
-      if (typeof navigator !== "undefined" && navigator.clipboard) {
-        await navigator.clipboard.writeText(displayPayload);
+      if (typeof navigator === "undefined" || !navigator.clipboard?.writeText) {
+        throw new Error("Clipboard API unavailable");
       }
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      await navigator.clipboard.writeText(displayPayload);
+      setCopyStatus("copied");
+      copyTimeoutRef.current = setTimeout(() => setCopyStatus("idle"), 2000);
     } catch {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      // Retain error feedback and NEVER falsely claim "COPIED"
+      setCopyStatus("error");
+      copyTimeoutRef.current = setTimeout(() => setCopyStatus("idle"), 2000);
     }
   };
 
@@ -465,13 +482,28 @@ export function WorkflowTopology({
             <button
               type="button"
               onClick={handleCopy}
-              className="inline-flex min-h-[44px] items-center gap-1.5 rounded px-3 py-2 font-mono text-[11px] font-bold text-white/80 bg-white/10 hover:bg-white/20 active:scale-[0.98] transition-all press-spring focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#C85A17]"
-              aria-label="Copy JSON contract payload to clipboard"
+              className={cn(
+                "inline-flex min-h-[44px] items-center gap-1.5 rounded px-3 py-2 font-mono text-[11px] font-bold text-white/80 bg-white/10 hover:bg-white/20 active:scale-[0.98] transition-all press-spring focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#C85A17]",
+                copyStatus === "copied" && "text-[#34D399] bg-[#059669]/20 border border-[#059669]/40",
+                copyStatus === "error" && "text-[#EF4444] bg-[#DC2626]/20 border border-[#DC2626]/40",
+              )}
+              aria-label={
+                copyStatus === "copied"
+                  ? "JSON contract payload copied to clipboard"
+                  : copyStatus === "error"
+                    ? "Failed to copy JSON contract payload"
+                    : "Copy JSON contract payload to clipboard"
+              }
             >
-              {copied ? (
+              {copyStatus === "copied" ? (
                 <>
                   <Check className="size-3.5 text-[#34D399]" />
                   <span className="text-[#34D399]">COPIED</span>
+                </>
+              ) : copyStatus === "error" ? (
+                <>
+                  <AlertTriangle className="size-3.5 text-[#EF4444]" />
+                  <span className="text-[#EF4444]">FAILED TO COPY</span>
                 </>
               ) : (
                 <>

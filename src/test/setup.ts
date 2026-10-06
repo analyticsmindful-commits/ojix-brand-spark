@@ -1,4 +1,5 @@
 import "@testing-library/jest-dom/vitest";
+import { vi } from "vitest";
 
 Object.defineProperty(window, "scrollTo", {
   writable: true,
@@ -70,3 +71,13 @@ Object.defineProperty(globalThis, "ResizeObserver", {
   configurable: true,
   value: MockResizeObserver,
 });
+
+if (typeof navigator !== "undefined" && !navigator.clipboard) {
+  Object.defineProperty(navigator, "clipboard", {
+    writable: true,
+    configurable: true,
+    value: {
+      writeText: vi.fn().mockResolvedValue(undefined),
+    },
+  });
+}

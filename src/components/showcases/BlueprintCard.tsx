@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { ArrowRight, ShieldAlert, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { DomainBlueprintConfig, SimulationMode } from "./domains/types";
@@ -15,6 +15,8 @@ export interface BlueprintCardProps {
   onToggleChange?: (toggleId: string, value: boolean | string) => void;
   className?: string;
 }
+
+const ARCHITECTURE_MODES: SimulationMode[] = ["ojix", "baseline"];
 
 export function BlueprintCard({
   domain,
@@ -42,6 +44,43 @@ export function BlueprintCard({
       onSimulationModeChange(mode);
     } else {
       setInternalSimulationMode(mode);
+    }
+  };
+
+  const modeRefs = useRef<Record<SimulationMode, HTMLButtonElement | null>>({
+    ojix: null,
+    baseline: null,
+  });
+
+  // W3C APG Radio Group Keyboard Navigation
+  const handleModeKeyDown = (
+    e: React.KeyboardEvent,
+    currentMode: SimulationMode,
+  ) => {
+    const currentIndex = ARCHITECTURE_MODES.indexOf(currentMode);
+    let nextIndex = -1;
+
+    if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+      e.preventDefault();
+      nextIndex = (currentIndex + 1) % ARCHITECTURE_MODES.length;
+    } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+      e.preventDefault();
+      nextIndex =
+        (currentIndex - 1 + ARCHITECTURE_MODES.length) % ARCHITECTURE_MODES.length;
+    } else if (e.key === "Home") {
+      e.preventDefault();
+      nextIndex = 0;
+    } else if (e.key === "End") {
+      e.preventDefault();
+      nextIndex = ARCHITECTURE_MODES.length - 1;
+    }
+
+    if (nextIndex !== -1) {
+      const nextMode = ARCHITECTURE_MODES[nextIndex];
+      if (nextMode) {
+        setSimulationMode(nextMode);
+        modeRefs.current[nextMode]?.focus();
+      }
     }
   };
 
@@ -109,12 +148,18 @@ export function BlueprintCard({
               className="inline-flex flex-wrap rounded-lg border border-[#E5E0D8] bg-white p-1 shadow-2xs gap-1 sm:gap-0 max-w-full"
             >
               <button
+                ref={(el) => {
+                  modeRefs.current.ojix = el;
+                }}
                 type="button"
                 role="radio"
+                id="arch-mode-ojix"
                 aria-checked={simulationMode === "ojix"}
+                tabIndex={simulationMode === "ojix" ? 0 : -1}
                 onClick={() => setSimulationMode("ojix")}
+                onKeyDown={(e) => handleModeKeyDown(e, "ojix")}
                 className={cn(
-                  "inline-flex min-h-[44px] items-center justify-center rounded-md px-3 py-2 font-mono text-xs font-bold transition-all press-spring w-full sm:w-auto",
+                  "inline-flex min-h-[44px] items-center justify-center rounded-md px-3 py-2 font-mono text-xs font-bold transition-all press-spring w-full sm:w-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C85A17] focus-visible:ring-offset-2",
                   simulationMode === "ojix"
                     ? "bg-[#0B1320] text-white shadow-xs"
                     : "text-[#4B5563] hover:text-[#0B1320]",
@@ -123,12 +168,18 @@ export function BlueprintCard({
                 ● OJIX Engineered Core
               </button>
               <button
+                ref={(el) => {
+                  modeRefs.current.baseline = el;
+                }}
                 type="button"
                 role="radio"
+                id="arch-mode-baseline"
                 aria-checked={simulationMode === "baseline"}
+                tabIndex={simulationMode === "baseline" ? 0 : -1}
                 onClick={() => setSimulationMode("baseline")}
+                onKeyDown={(e) => handleModeKeyDown(e, "baseline")}
                 className={cn(
-                  "inline-flex min-h-[44px] items-center justify-center rounded-md px-3 py-2 font-mono text-xs font-bold transition-all press-spring w-full sm:w-auto",
+                  "inline-flex min-h-[44px] items-center justify-center rounded-md px-3 py-2 font-mono text-xs font-bold transition-all press-spring w-full sm:w-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DC2626] focus-visible:ring-offset-2",
                   simulationMode === "baseline"
                     ? "bg-[#DC2626] text-white shadow-xs"
                     : "text-[#4B5563] hover:text-[#DC2626]",
@@ -209,7 +260,7 @@ export function BlueprintCard({
                       aria-label={toggle.label}
                       className="inline-flex flex-wrap rounded-lg border border-[#E5E0D8] bg-white p-0.5 shadow-2xs max-w-full"
                     >
-                      {toggle.options.map((opt) => {
+                      {toggle.options.map((opt, optIdx) => {
                         const isOptActive = currentVal === opt.value;
                         return (
                           <button
@@ -217,9 +268,40 @@ export function BlueprintCard({
                             type="button"
                             role="radio"
                             aria-checked={isOptActive}
+                            tabIndex={isOptActive ? 0 : -1}
                             onClick={() => handleToggle(toggle.id, opt.value)}
+                            onKeyDown={(e) => {
+                              if (!toggle.options) return;
+                              let nextIdx = -1;
+                              if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+                                e.preventDefault();
+                                nextIdx = (optIdx + 1) % toggle.options.length;
+                              } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+                                e.preventDefault();
+                                nextIdx =
+                                  (optIdx - 1 + toggle.options.length) % toggle.options.length;
+                              } else if (e.key === "Home") {
+                                e.preventDefault();
+                                nextIdx = 0;
+                              } else if (e.key === "End") {
+                                e.preventDefault();
+                                nextIdx = toggle.options.length - 1;
+                              }
+
+                              if (nextIdx !== -1) {
+                                const targetOpt = toggle.options[nextIdx];
+                                if (targetOpt) {
+                                  handleToggle(toggle.id, targetOpt.value);
+                                  const parent = e.currentTarget.parentElement;
+                                  const targetBtn = parent?.querySelectorAll<HTMLButtonElement>(
+                                    'button[role="radio"]',
+                                  )[nextIdx];
+                                  targetBtn?.focus();
+                                }
+                              }
+                            }}
                             className={cn(
-                              "inline-flex min-h-[44px] items-center justify-center rounded-md px-3 py-2 font-mono text-xs font-bold transition-all press-spring",
+                              "inline-flex min-h-[44px] items-center justify-center rounded-md px-3 py-2 font-mono text-xs font-bold transition-all press-spring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C85A17] focus-visible:ring-offset-2",
                               isOptActive
                                 ? "bg-[#C85A17] text-white shadow-xs"
                                 : "text-[#4B5563] hover:text-[#0B1320]",

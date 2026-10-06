@@ -241,13 +241,13 @@ describe("Milestone 2: Showcases Modular Architecture & Interactivity", () => {
       expect(screen.getByText(/1420/i)).toBeInTheDocument();
     });
 
-    it("provides one-click copy feedback on live JSON payload", () => {
+    it("provides one-click copy feedback on live JSON payload", async () => {
       render(<ShowcaseSection />);
       const copyBtn = screen.getByRole("button", { name: /Copy JSON contract payload/i });
       expect(copyBtn).toHaveTextContent(/COPY JSON/i);
 
       fireEvent.click(copyBtn);
-      expect(screen.getByText(/COPIED/i)).toBeInTheDocument();
+      expect(await screen.findByText(/COPIED/i)).toBeInTheDocument();
     });
 
     it("verifies all 16 node JSON payloads parse strictly as valid JSON without throwing", () => {

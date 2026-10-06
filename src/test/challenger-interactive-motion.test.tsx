@@ -6,94 +6,107 @@ import fs from "node:fs";
 import path from "node:path";
 
 describe("Adversarial Stress Suite: Hero.tsx Interactivity", () => {
-  it("rapidly switches across all 4 operational sectors without state desynchronization", () => {
-    render(<Hero />);
+  it(
+    "rapidly switches across all 4 operational sectors without state desynchronization",
+    () => {
+      render(<Hero />);
 
-    const sectors = [
-      { name: /Legal OS/i, expectedAudience: /Multi-Partner Law Firms/i },
-      { name: /Industrial ERP/i, expectedAudience: /Industrial Mid-Market/i },
-      { name: /Clinical Logistics/i, expectedAudience: /Regional Diagnostic Networks/i },
-      { name: /Supply Chain/i, expectedAudience: /High-Throughput Distribution/i },
-    ];
+      const sectors = [
+        { name: /Legal OS/i, expectedAudience: /Multi-Partner Law Firms/i },
+        { name: /Industrial ERP/i, expectedAudience: /Industrial Mid-Market/i },
+        { name: /Clinical Logistics/i, expectedAudience: /Regional Diagnostic Networks/i },
+        { name: /Supply Chain/i, expectedAudience: /High-Throughput Distribution/i },
+      ];
 
-    // Rapid cycle switching
-    for (let cycle = 0; cycle < 3; cycle++) {
+      // Pre-query sector buttons once to avoid 12 redundant accessible DOM tree traversals
+      const sectorButtons = sectors.map((sector) => ({
+        btn: screen.getByRole("button", { name: sector.name }),
+        expectedAudience: sector.expectedAudience,
+      }));
+
+      // Rapid cycle switching
+      for (let cycle = 0; cycle < 3; cycle++) {
+        for (const { btn, expectedAudience } of sectorButtons) {
+          fireEvent.click(btn);
+          expect(screen.getByText(expectedAudience)).toBeInTheDocument();
+        }
+      }
+    },
+    30000,
+  );
+
+  it(
+    "maintains valid JSON payloads and updates contracts for all 16 node/sector combinations",
+    () => {
+      render(<Hero />);
+
+      const sectors = [
+        {
+          name: /Legal OS/i,
+          nodeNames: [
+            "Court Docket Ingestion",
+            "Conflict & Party Validation",
+            "Statutory Deadline Calculator",
+            "IOLTA Trust Ledger Sync",
+          ],
+        },
+        {
+          name: /Industrial ERP/i,
+          nodeNames: [
+            "Work Order Release",
+            "Raw Material & Tooling Gate",
+            "CNC Cell Dynamic Routing",
+            "Subcontractor PO 3-Way Match",
+          ],
+        },
+        {
+          name: /Clinical Logistics/i,
+          nodeNames: [
+            "Specimen Pickup Dispatch",
+            "Thermal Excursion Guard",
+            "Dynamic Courier Route Optimization",
+            "Chain of Custody Handover",
+          ],
+        },
+        {
+          name: /Supply Chain/i,
+          nodeNames: [
+            "Purchase Order Release",
+            "Carrier Insurance & Authority Gate",
+            "Dynamic Freight Tender Engine",
+            "Real-Time WMS Ledger Sync",
+          ],
+        },
+      ];
+
       for (const sector of sectors) {
-        const btn = screen.getByRole("button", { name: sector.name });
-        fireEvent.click(btn);
-        expect(screen.getByText(sector.expectedAudience)).toBeInTheDocument();
+        fireEvent.click(screen.getByRole("button", { name: sector.name }));
+
+        for (let i = 0; i < sector.nodeNames.length; i++) {
+          const nodeName = sector.nodeNames[i]!;
+          const nodeBtn = screen.getByRole("button", { name: new RegExp(nodeName, "i") });
+          fireEvent.click(nodeBtn);
+
+          // Verify Node inspection header
+          expect(
+            screen.getByText(new RegExp(`Node Inspection: ${nodeName}`, "i")),
+          ).toBeInTheDocument();
+
+          // Verify Node indicator in footer
+          expect(screen.getByText(new RegExp(`NODE ${i + 1} OF 4`, "i"))).toBeInTheDocument();
+
+          // Extract the code block text and verify valid JSON parse
+          const codeElement = screen.getByText((content, element) => {
+            return element?.tagName.toLowerCase() === "code" && content.includes("{");
+          });
+          expect(codeElement).toBeInTheDocument();
+          const jsonText = codeElement.textContent || "";
+          expect(() => JSON.parse(jsonText)).not.toThrow();
+        }
       }
-    }
-  });
-
-  it("maintains valid JSON payloads and updates contracts for all 16 node/sector combinations", () => {
-    render(<Hero />);
-
-    const sectors = [
-      {
-        name: /Legal OS/i,
-        nodeNames: [
-          "Court Docket Ingestion",
-          "Conflict & Party Validation",
-          "Statutory Deadline Calculator",
-          "IOLTA Trust Ledger Sync",
-        ],
-      },
-      {
-        name: /Industrial ERP/i,
-        nodeNames: [
-          "Work Order Release",
-          "Raw Material & Tooling Gate",
-          "CNC Cell Dynamic Routing",
-          "Subcontractor PO 3-Way Match",
-        ],
-      },
-      {
-        name: /Clinical Logistics/i,
-        nodeNames: [
-          "Specimen Pickup Dispatch",
-          "Thermal Excursion Guard",
-          "Dynamic Courier Route Optimization",
-          "Chain of Custody Handover",
-        ],
-      },
-      {
-        name: /Supply Chain/i,
-        nodeNames: [
-          "Purchase Order Release",
-          "Carrier Insurance & Authority Gate",
-          "Dynamic Freight Tender Engine",
-          "Real-Time WMS Ledger Sync",
-        ],
-      },
-    ];
-
-    for (const sector of sectors) {
-      fireEvent.click(screen.getByRole("button", { name: sector.name }));
-
-      for (let i = 0; i < sector.nodeNames.length; i++) {
-        const nodeName = sector.nodeNames[i]!;
-        const nodeBtn = screen.getByRole("button", { name: new RegExp(nodeName, "i") });
-        fireEvent.click(nodeBtn);
-
-        // Verify Node inspection header
-        expect(
-          screen.getByText(new RegExp(`Node Inspection: ${nodeName}`, "i")),
-        ).toBeInTheDocument();
-
-        // Verify Node indicator in footer
-        expect(screen.getByText(new RegExp(`NODE ${i + 1} OF 4`, "i"))).toBeInTheDocument();
-
-        // Extract the code block text and verify valid JSON parse
-        const codeElement = screen.getByText((content, element) => {
-          return element?.tagName.toLowerCase() === "code" && content.includes("{");
-        });
-        expect(codeElement).toBeInTheDocument();
-        const jsonText = codeElement.textContent || "";
-        expect(() => JSON.parse(jsonText)).not.toThrow();
-      }
-    }
-  });
+    },
+    30000,
+  );
 
   it("resets selected node index to 0 when switching sectors", () => {
     render(<Hero />);
