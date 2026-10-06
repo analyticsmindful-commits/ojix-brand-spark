@@ -2,7 +2,7 @@
 
 https://brand.dropbox.com/
 
-Like the animations and ui in the above link.  Build a website for ojix.in by understanding the business as per the attached
+Like the animations and ui in the above link. Build a website for ojix.in by understanding the business as per the attached
 
 This project was built with [Lovable](https://lovable.dev).
 
