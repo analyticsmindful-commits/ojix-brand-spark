@@ -126,8 +126,8 @@ export function OjixBrandOutro() {
         <div className="mx-auto mt-10 max-w-3xl text-center text-base sm:text-lg text-[#4B5563] leading-relaxed">
           <p>
             These guidelines and operating systems are engineered to eliminate manual WhatsApp
-            dispatch leaks, fragmented Excel sheets, and unverified data transfers. What we build
-            is a living operational toolkit for high-stakes enterprises.
+            dispatch leaks, fragmented Excel sheets, and unverified data transfers. What we build is
+            a living operational toolkit for high-stakes enterprises.
           </p>
           <p className="mt-4 text-sm text-slate-500">
             Deployed live across 8 enterprise partners in legal litigation, state logistics, and

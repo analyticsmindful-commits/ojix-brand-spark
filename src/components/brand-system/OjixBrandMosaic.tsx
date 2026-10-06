@@ -49,8 +49,8 @@ export function OjixBrandMosaic({ className, onTileClick }: OjixBrandMosaicProps
               </h2>
               <p className="mt-3 text-base md:text-lg text-[#4B5563] leading-relaxed">
                 At OJIX, our design system and system architecture are unified. From kinetic
-                topologies to deterministic color tokens, every module infuses high-stakes enterprise
-                infrastructure with uncompromising clarity.
+                topologies to deterministic color tokens, every module infuses high-stakes
+                enterprise infrastructure with uncompromising clarity.
               </p>
             </div>
 
@@ -277,7 +277,10 @@ export function OjixBrandMosaic({ className, onTileClick }: OjixBrandMosaicProps
 
             {/* Kinetic Vector Monogram Illustration */}
             <div className="relative my-6 flex h-36 w-full items-center justify-center">
-              <svg viewBox="0 0 100 100" className="size-24 transition-transform duration-500 group-hover:scale-110">
+              <svg
+                viewBox="0 0 100 100"
+                className="size-24 transition-transform duration-500 group-hover:scale-110"
+              >
                 {/* Outer Architectural Diamond Grid */}
                 <rect
                   x="20"
@@ -567,9 +570,7 @@ export function OjixBrandMosaic({ className, onTileClick }: OjixBrandMosaicProps
                 <g
                   className="transition-transform duration-700 ease-out"
                   style={{
-                    transform: isNightMode
-                      ? "rotate(180deg)"
-                      : "rotate(0deg)",
+                    transform: isNightMode ? "rotate(180deg)" : "rotate(0deg)",
                     transformOrigin: "100px 50px",
                   }}
                 >
@@ -581,10 +582,42 @@ export function OjixBrandMosaic({ className, onTileClick }: OjixBrandMosaicProps
                     className="fill-[#C85A17] group-hover:fill-[#F97316] transition-colors"
                   />
                   {/* Sun Rays */}
-                  <line x1="100" y1="8" x2="100" y2="2" stroke="#C85A17" strokeWidth="2" strokeLinecap="round" />
-                  <line x1="100" y1="42" x2="100" y2="48" stroke="#C85A17" strokeWidth="2" strokeLinecap="round" />
-                  <line x1="83" y1="25" x2="77" y2="25" stroke="#C85A17" strokeWidth="2" strokeLinecap="round" />
-                  <line x1="117" y1="25" x2="123" y2="25" stroke="#C85A17" strokeWidth="2" strokeLinecap="round" />
+                  <line
+                    x1="100"
+                    y1="8"
+                    x2="100"
+                    y2="2"
+                    stroke="#C85A17"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                  />
+                  <line
+                    x1="100"
+                    y1="42"
+                    x2="100"
+                    y2="48"
+                    stroke="#C85A17"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                  />
+                  <line
+                    x1="83"
+                    y1="25"
+                    x2="77"
+                    y2="25"
+                    stroke="#C85A17"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                  />
+                  <line
+                    x1="117"
+                    y1="25"
+                    x2="123"
+                    y2="25"
+                    stroke="#C85A17"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                  />
 
                   {/* Moon (Night) */}
                   <path

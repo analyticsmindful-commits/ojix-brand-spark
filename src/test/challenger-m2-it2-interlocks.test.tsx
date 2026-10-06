@@ -26,7 +26,7 @@ describe("Challenger M2 Iteration 2: SVG Exception Interlocks, Reduced Motion & 
           simulationMode="ojix"
           activeToggles={{}}
           domainId="legal-os"
-        />
+        />,
       );
 
       // Inspect connectors on desktop (hidden lg:flex containers)
@@ -44,7 +44,10 @@ describe("Challenger M2 Iteration 2: SVG Exception Interlocks, Reduced Motion & 
       expect(arrow0).toHaveAttribute("fill", "#C85A17");
       expect(pulse0).not.toBeNull();
       expect(pulse0).toHaveAttribute("fill", "#C85A17");
-      expect(pulse0?.querySelector("animate[attributeName='cx']")).toHaveAttribute("values", "0;17");
+      expect(pulse0?.querySelector("animate[attributeName='cx']")).toHaveAttribute(
+        "values",
+        "0;17",
+      );
     });
 
     it("dynamically converts downstream connector to crimson dashed rule and halts traveling pulse when upstream stage has an exception", () => {
@@ -85,7 +88,7 @@ describe("Challenger M2 Iteration 2: SVG Exception Interlocks, Reduced Motion & 
             simulationMode="ojix"
             activeToggles={{ [item.toggleKey]: true }}
             domainId={item.domainId}
-          />
+          />,
         );
 
         const connectorSvgs = container.querySelectorAll(".hidden.lg\\:flex svg");
@@ -125,7 +128,7 @@ describe("Challenger M2 Iteration 2: SVG Exception Interlocks, Reduced Motion & 
           simulationMode="ojix"
           activeToggles={{ legal_toggle_conflict: true }}
           domainId="legal-os"
-        />
+        />,
       );
 
       // Mobile downward connectors: div.sm\\:hidden svg
@@ -165,7 +168,7 @@ describe("Challenger M2 Iteration 2: SVG Exception Interlocks, Reduced Motion & 
           simulationMode="ojix"
           activeToggles={{}}
           domainId="legal-os"
-        />
+        />,
       );
 
       const connectorSvgs = container.querySelectorAll(".hidden.lg\\:flex svg");
@@ -192,7 +195,7 @@ describe("Challenger M2 Iteration 2: SVG Exception Interlocks, Reduced Motion & 
           simulationMode="baseline"
           activeToggles={{}}
           domainId="legal-os"
-        />
+        />,
       );
 
       const connectorSvgs = container.querySelectorAll(".hidden.lg\\:flex svg");
@@ -224,7 +227,7 @@ describe("Challenger M2 Iteration 2: SVG Exception Interlocks, Reduced Motion & 
 
       // Verify Stage 04 status text changes reactively
       expect(
-        screen.getByText(/Manual claim detected · Geofence GPS refutes detention surcharge/i)
+        screen.getByText(/Manual claim detected · Geofence GPS refutes detention surcharge/i),
       ).toBeInTheDocument();
 
       // Click Stage 04 button to inspect payload

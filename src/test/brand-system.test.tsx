@@ -104,8 +104,9 @@ describe("OJIX Brand Outro & Multi-User Collaboration Canvas", () => {
     expect(
       screen.getByRole("link", { name: /Founder Ingress: engineering@ojix\.in/i }),
     ).toHaveAttribute("href", "mailto:engineering@ojix.in");
-    expect(
-      screen.getByRole("link", { name: /Mutual NDA & IP Protection/i }),
-    ).toHaveAttribute("href", "#top");
+    expect(screen.getByRole("link", { name: /Mutual NDA & IP Protection/i })).toHaveAttribute(
+      "href",
+      "#top",
+    );
   });
 });

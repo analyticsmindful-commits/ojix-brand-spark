@@ -118,10 +118,7 @@ export const CLIENT_PROFILES: ClientProfile[] = [
         {/* BSG Fleur-de-lis + Trefoil + Chakra Motif */}
         <g transform="translate(6, 6)">
           <circle cx="18" cy="18" r="16" fill="none" stroke="currentColor" strokeWidth="2" />
-          <path
-            d="M18 6c-2 5-6 8-6 12 0 4 3 6 6 6s6-2 6-6c0-4-4-7-6-12z"
-            fill="#C85A17"
-          />
+          <path d="M18 6c-2 5-6 8-6 12 0 4 3 6 6 6s6-2 6-6c0-4-4-7-6-12z" fill="#C85A17" />
           <circle cx="18" cy="18" r="3.5" fill="#0B1320" />
           <path d="M12 28h12" stroke="currentColor" strokeWidth="2" />
         </g>
@@ -238,7 +235,12 @@ export const CLIENT_PROFILES: ClientProfile[] = [
       >
         {/* Classical Balance of Justice Crest */}
         <g transform="translate(6, 7)">
-          <path d="M16 2v26M6 8h20M6 8l-4 8h8zM26 8l-4 8h8z" stroke="currentColor" strokeWidth="2" fill="none" />
+          <path
+            d="M16 2v26M6 8h20M6 8l-4 8h8zM26 8l-4 8h8z"
+            stroke="currentColor"
+            strokeWidth="2"
+            fill="none"
+          />
           <circle cx="16" cy="4" r="2.5" fill="#C85A17" />
         </g>
         <text
@@ -352,12 +354,7 @@ export const CLIENT_PROFILES: ClientProfile[] = [
       >
         {/* Industrial Hex Structural Mark */}
         <g transform="translate(6, 8)">
-          <path
-            d="M16 2l12 7v14l-12 7-12-7V9z"
-            stroke="currentColor"
-            strokeWidth="2"
-            fill="none"
-          />
+          <path d="M16 2l12 7v14l-12 7-12-7V9z" stroke="currentColor" strokeWidth="2" fill="none" />
           <path d="M16 8l6 3.5v7L16 22l-6-3.5v-7z" fill="#C85A17" />
         </g>
         <text
@@ -419,7 +416,12 @@ export const CLIENT_PROFILES: ClientProfile[] = [
       >
         {/* Modern Geometric Tech Prism */}
         <g transform="translate(6, 8)">
-          <polygon points="16,2 28,14 16,26 4,14" fill="none" stroke="currentColor" strokeWidth="2.5" />
+          <polygon
+            points="16,2 28,14 16,26 4,14"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+          />
           <polygon points="16,7 23,14 16,21 9,14" fill="#C85A17" />
         </g>
         <text
@@ -501,7 +503,7 @@ export const CLIENT_PROFILES: ClientProfile[] = [
 ];
 
 export function ClientTrustSection() {
-  const [selectedClient, setSelectedClient] = useState<ClientProfile>(CLIENT_PROFILES[0]);
+  const [selectedClient, setSelectedClient] = useState<ClientProfile>(CLIENT_PROFILES[0]!);
 
   return (
     <section
