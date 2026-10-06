@@ -53,10 +53,7 @@ export function BlueprintCard({
   });
 
   // W3C APG Radio Group Keyboard Navigation
-  const handleModeKeyDown = (
-    e: React.KeyboardEvent,
-    currentMode: SimulationMode,
-  ) => {
+  const handleModeKeyDown = (e: React.KeyboardEvent, currentMode: SimulationMode) => {
     const currentIndex = ARCHITECTURE_MODES.indexOf(currentMode);
     let nextIndex = -1;
 
@@ -65,8 +62,7 @@ export function BlueprintCard({
       nextIndex = (currentIndex + 1) % ARCHITECTURE_MODES.length;
     } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
       e.preventDefault();
-      nextIndex =
-        (currentIndex - 1 + ARCHITECTURE_MODES.length) % ARCHITECTURE_MODES.length;
+      nextIndex = (currentIndex - 1 + ARCHITECTURE_MODES.length) % ARCHITECTURE_MODES.length;
     } else if (e.key === "Home") {
       e.preventDefault();
       nextIndex = 0;
@@ -293,9 +289,10 @@ export function BlueprintCard({
                                 if (targetOpt) {
                                   handleToggle(toggle.id, targetOpt.value);
                                   const parent = e.currentTarget.parentElement;
-                                  const targetBtn = parent?.querySelectorAll<HTMLButtonElement>(
-                                    'button[role="radio"]',
-                                  )[nextIdx];
+                                  const targetBtn =
+                                    parent?.querySelectorAll<HTMLButtonElement>(
+                                      'button[role="radio"]',
+                                    )[nextIdx];
                                   targetBtn?.focus();
                                 }
                               }

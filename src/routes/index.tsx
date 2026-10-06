@@ -10,6 +10,8 @@ import { BusinessXRaySection } from "@/components/xray/BusinessXRaySection";
 import { EngineeringPillarsSection } from "@/components/engineering/EngineeringPillarsSection";
 import { FaqSection } from "@/components/faq/FaqSection";
 import { FinalCtaSection } from "@/components/cta/FinalCtaSection";
+import { OjixBrandMosaic } from "@/components/brand-system/OjixBrandMosaic";
+import { OjixBrandOutro } from "@/components/brand-system/OjixBrandOutro";
 import { Footer } from "@/components/layout/Footer";
 
 export const Route = createFileRoute("/")({
@@ -123,6 +125,9 @@ function IndexPage() {
         {/* Above-the-fold Value Engine & Operational Topology Builder */}
         <Hero />
 
+        {/* OJIX Brand & Operating System Matrix (Dropbox Brand Guidelines Inspired 8-Tile Architecture) */}
+        <OjixBrandMosaic />
+
         {/* Proven Client Engagements & Institutional Logos */}
         <ClientTrustSection />
 
@@ -146,6 +151,9 @@ function IndexPage() {
 
         {/* Anti-AI Founder FAQs & Direct Answers */}
         <FaqSection />
+
+        {/* OJIX Brand Outro: Eames Quote & Interactive Collaborative Cursors Canvas */}
+        <OjixBrandOutro />
 
         {/* Final Magnetic Technical Scoping Intake & Founder Ingress */}
         <FinalCtaSection />

@@ -215,12 +215,15 @@ export function WorkflowTopology({
       clearTimeout(copyTimeoutRef.current);
     }
 
+    if (typeof navigator === "undefined" || !navigator.clipboard?.writeText) {
+      setCopyStatus("error");
+      copyTimeoutRef.current = setTimeout(() => setCopyStatus("idle"), 2000);
+      return;
+    }
+
     try {
-      if (typeof navigator === "undefined" || !navigator.clipboard?.writeText) {
-        throw new Error("Clipboard API unavailable");
-      }
-      await navigator.clipboard.writeText(displayPayload);
       setCopyStatus("copied");
+      await navigator.clipboard.writeText(displayPayload);
       copyTimeoutRef.current = setTimeout(() => setCopyStatus("idle"), 2000);
     } catch {
       // Retain error feedback and NEVER falsely claim "COPIED"
@@ -484,8 +487,10 @@ export function WorkflowTopology({
               onClick={handleCopy}
               className={cn(
                 "inline-flex min-h-[44px] items-center gap-1.5 rounded px-3 py-2 font-mono text-[11px] font-bold text-white/80 bg-white/10 hover:bg-white/20 active:scale-[0.98] transition-all press-spring focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#C85A17]",
-                copyStatus === "copied" && "text-[#34D399] bg-[#059669]/20 border border-[#059669]/40",
-                copyStatus === "error" && "text-[#EF4444] bg-[#DC2626]/20 border border-[#DC2626]/40",
+                copyStatus === "copied" &&
+                  "text-[#34D399] bg-[#059669]/20 border border-[#059669]/40",
+                copyStatus === "error" &&
+                  "text-[#EF4444] bg-[#DC2626]/20 border border-[#DC2626]/40",
               )}
               aria-label={
                 copyStatus === "copied"

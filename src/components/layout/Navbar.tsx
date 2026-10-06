@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Menu, X, ArrowUpRight } from "lucide-react";
 
 export const NAV_LINKS = [
+  { label: "Brand Matrix", href: "#brand-matrix", id: "brand-matrix" },
   { label: "Clients", href: "#clients", id: "clients" },
   { label: "Products", href: "#products", id: "products" },
   { label: "Sectors", href: "#sectors", id: "sectors" },
